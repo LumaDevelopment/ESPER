@@ -1,14 +1,14 @@
-// Function to get the YouTube video ID from the current URL
+// Function to get the youtube id from url
 function getYouTubeVideoID() {
   const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get('v'); // Extract the 'v' parameter from the URL
+  return urlParams.get('v'); // takes everything after the v in url
 }
 
-// Function to create an iframe with the YouTube video
+// creates iframe with youtube video
 function createYouTubeIframe(videoID) {
   const iframe = document.createElement('iframe');
 
-  iframe.src = `https://www.youtube.com/embed/${videoID}?autoplay=1&controls=1`;
+  iframe.src = `https://www.youtube.com/embed/${videoID}?autoplay=1&controls=1&start=2`; //&start=2 makes it start at 2 seconds
   iframe.width = '640';
   iframe.height = '360';
   iframe.style.position = 'fixed';
@@ -20,7 +20,7 @@ function createYouTubeIframe(videoID) {
   document.body.appendChild(iframe);
 }
 
-// Get the video ID and create the iframe
+// get youtube id and generate framework
 const videoID = getYouTubeVideoID();
 if (videoID) {
   createYouTubeIframe(videoID);
