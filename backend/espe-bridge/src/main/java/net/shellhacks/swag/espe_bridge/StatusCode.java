@@ -14,6 +14,13 @@ public enum StatusCode {
   OK(200),
 
   /**
+   * Too many options for a search, need
+   * to add more information to narrow
+   * down to one.
+   */
+  MULTIPLE_OPTIONS(300),
+
+  /**
    * A valid request was made, but, it had an invalid
    * number of parameters, invalid types of parameters,
    * or invalid values for parameters.
@@ -22,9 +29,10 @@ public enum StatusCode {
 
   /**
    * There is no request with the given path that is
-   * recognized by the API.
+   * recognized by the API. OR, client is searching
+   * for something and we couldn't find it.
    */
-  INVALID_PATH(404),
+  NOT_FOUND(404),
 
   /**
    * A bad URL passed into the API.

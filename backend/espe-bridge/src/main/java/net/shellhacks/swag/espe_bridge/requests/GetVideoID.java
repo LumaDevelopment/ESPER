@@ -3,6 +3,7 @@ package net.shellhacks.swag.espe_bridge.requests;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.snowflake.snowpark_java.DataFrame;
 import com.snowflake.snowpark_java.Functions;
+import com.snowflake.snowpark_java.Row;
 import com.snowflake.snowpark_java.Session;
 import net.shellhacks.swag.espe_bridge.MainVerticle;
 import net.shellhacks.swag.espe_bridge.Response;
@@ -12,8 +13,10 @@ import net.shellhacks.swag.espe_bridge.Utils;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 
 public class GetVideoID {
 
@@ -89,12 +92,41 @@ public class GetVideoID {
         Functions.col((String) keyValue[0])
                  .equal_to(Functions.lit(keyValue[1]))
       );
+
+      if (df.count() <= 1) {
+        // Don't need to keep filtering if
+        // we already have what we're
+        // looking for
+        break;
+      }
+    }
+
+    long dfCount = df.count();
+
+    if (dfCount > 1) {
+      // Too many options
+      return new Response(StatusCode.MULTIPLE_OPTIONS, null);
+    }
+
+    if (dfCount < 1) {
+      // No options
+      return new Response(StatusCode.NOT_FOUND, null);
     }
 
     ObjectNode returnVal = MainVerticle.mapper.createObjectNode();
-    returnVal.put("Number of matches", df.count());
+    Optional<Row> first = Arrays.stream(df.collect()).findFirst();
 
-    return new Response(StatusCode.OK, returnVal);
+    if (first.isPresent()) {
+      // If we do have a singular video which fits this
+      // criteria, return its UUID.
+      Row row = first.get();
+      returnVal.put("uuid", row.getString(0));
+      return new Response(StatusCode.OK, returnVal);
+    } else {
+      // Somehow we have one row but not one row exists...
+      System.err.println("Got video ID, but can't get row from DataFrame!");
+      return new Response(StatusCode.INTERNAL_ERROR, null);
+    }
   }
 
 }

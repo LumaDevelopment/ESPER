@@ -2,8 +2,8 @@ package net.shellhacks.swag.espe_bridge;
 
 import com.snowflake.snowpark_java.Session;
 import net.shellhacks.swag.espe_bridge.requests.AddContrast;
-import net.shellhacks.swag.espe_bridge.requests.NewVideo;
 import net.shellhacks.swag.espe_bridge.requests.GetVideoID;
+import net.shellhacks.swag.espe_bridge.requests.NewVideo;
 
 import java.util.Map;
 
@@ -32,13 +32,11 @@ public class RequestDirector {
         return GetVideoID.executeRequest(parameters, this.session);
       case AddContrast.ROUTE:
         System.out.println("Received request to add new contrast to database!");
-        break;
+        return AddContrast.executeRequest(parameters, this.session);
       default:
         System.out.println("Received unknown request: \"" + path + "\"");
-        return new Response(StatusCode.INVALID_PATH, null);
+        return new Response(StatusCode.NOT_FOUND, null);
     }
-
-    return new Response(StatusCode.INTERNAL_ERROR, null);
   }
 
   /**

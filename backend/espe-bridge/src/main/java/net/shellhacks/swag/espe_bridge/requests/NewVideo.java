@@ -13,7 +13,10 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.UUID;
 
 public class NewVideo {
 
@@ -94,38 +97,18 @@ public class NewVideo {
 
     // Next, we dynamically prepare the first half
     // of the INSERT statement
-    StringBuilder rawStatement = new StringBuilder();
-    rawStatement.append("INSERT INTO ESPE.ESPE_SCHEMA.ESPE_VIDEOS (");
-
-    // Put all field names in the statement
-    Iterator<Object[]> it = sqlParams.iterator();
-    while (it.hasNext()) {
-      Object[] keyValue = it.next();
-
-      rawStatement.append((String) keyValue[0]);
-      if (it.hasNext()) {
-        rawStatement.append(", ");
-      }
-    }
-    rawStatement.append(") VALUES (");
-
-    // Then, we dynamically put in a question mark
-    // for each field
-    for (int i = 0; i < sqlParams.size(); i++) {
-      rawStatement.append("?");
-      if (i != (sqlParams.size() - 1)) {
-        rawStatement.append(", ");
-      }
-    }
-    rawStatement.append(")");
+    String rawStatement = Utils.createRawStatement(
+      "ESPE.ESPE_SCHEMA.ESPE_VIDEOS",
+      sqlParams
+    );
 
     try {
       // Now, we convert this statement to a PreparedStatement,
       // and fill in the values
-      PreparedStatement stmt = conn.prepareStatement(rawStatement.toString());
+      PreparedStatement stmt = conn.prepareStatement(rawStatement);
 
       // Loop through all parameters
-      it = sqlParams.iterator();
+      Iterator<Object[]> it = sqlParams.iterator();
       int i = 1;
       while (it.hasNext()) {
         Object[] keyValue = it.next();
