@@ -16,12 +16,8 @@ public class MainVerticle extends AbstractVerticle {
 
   private static final Logger log = LoggerFactory.getLogger(MainVerticle.class);
 
-  private final ObjectMapper mapper;
-  private Session session;
-
-  public MainVerticle() {
-    this.mapper = new ObjectMapper();
-  }
+  public static final ObjectMapper mapper = new ObjectMapper();
+  private RequestDirector rd;
 
   @Override
   public void start(Promise<Void> startPromise) throws Exception {
@@ -31,7 +27,7 @@ public class MainVerticle extends AbstractVerticle {
       req.params().forEach(entry -> params.put(entry.getKey(), entry.getValue()));
 
       // Submit the request to the request director
-      Response resp = RequestDirector.executeRequest(
+      Response resp = this.rd.executeRequest(
         req.path(),
         params
       );
@@ -59,8 +55,9 @@ public class MainVerticle extends AbstractVerticle {
     }).listen(8888).onComplete(http -> {
       // Create a new session, using the connection properties
       // specified in a file.
+      Session session;
       try {
-        this.session = Session.builder().configFile("snowflake.properties").create();
+        session = Session.builder().configFile("snowflake.properties").create();
       } catch (Exception e) {
         System.err.println("Snowflake initialization failed, shutting down...");
         startPromise.fail(e);
@@ -70,6 +67,10 @@ public class MainVerticle extends AbstractVerticle {
       System.out.println("Snowflake successfully initialized!");
 
       if (http.succeeded()) {
+        // Now that everything else has succeeded,
+        // we can create our RequestDirector
+        this.rd = new RequestDirector(session);
+
         startPromise.complete();
         System.out.println("HTTP server started on port 8888");
       } else {
@@ -99,9 +100,7 @@ public class MainVerticle extends AbstractVerticle {
   @Override
   public void stop() throws Exception {
     // Shut down Snowflake connection
-    if (this.session != null) {
-      this.session.close();
-    }
+    this.rd.shutdown();
   }
 
 }
