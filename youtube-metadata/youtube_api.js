@@ -23,6 +23,8 @@ fetch(apiUrl)
       const viewCount = videoData.statistics.viewCount;
       const likeCount = videoData.statistics.likeCount;
       const duration = videoData.contentDetails.duration;
+      const tags = videoData.snippet.tags || []; // If no tags are available, use an empty array
+      const resolution = videoData.contentDetails.definition; // Resolution (hd or sd)
 
       console.log(`Title: ${title}`);
       console.log(`Description: ${description}`);
@@ -31,6 +33,8 @@ fetch(apiUrl)
       console.log(`Views: ${viewCount}`);
       console.log(`Likes: ${likeCount}`);
       console.log(`Duration: ${duration}`);
+      console.log(`Tags: ${tags.join(', ')}`); // Join tags into a string for display
+      console.log(`Resolution: ${resolution}`); // Outputs the resolution (hd or sd)
     } else {
       console.log('No video found');
     }
