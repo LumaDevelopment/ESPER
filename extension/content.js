@@ -37,11 +37,11 @@ function luminosityAdjustment(
 
     // Dodge divide by zero issues
     if (prevRealLum < Number.EPSILON) {
-        prevRealLum = 0.000001;
+        prevRealLum = 0.00000001;
     }
 
     if (currRealLum < Number.EPSILON) {
-        currRealLum = 0.000001;
+        currRealLum = 0.00000001;
     }
 
     // console.log("prevRealLum: " + prevRealLum + ", prevLumAdjPerc: " + prevLumAdjPerc + ", currRealLum: " + currRealLum + ", lumAdjPercThresh: " + lumAdjPercThresh);
@@ -99,7 +99,7 @@ function luminosityAdjustment(
     return currLumAdjPerc;
 }
 
-const lumAdjPercThresh = 0.05;
+const lumAdjPercThresh = 0.01;
 
 // Function to change brightness based on frame
 function activateFlashMitigation(videoElement, videoNum) {
