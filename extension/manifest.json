@@ -1,20 +1,15 @@
 {
-    "manifest_version": 3,
-    "name": "YouTube Video Duplicator",
-    "version": "1.0",
-    "description": "Creates a new instance of the current YouTube video and displays it on the page.",
-    "permissions": [
-      "activeTab",
-      "scripting"
-    ],
-    "host_permissions": [
-      "*://*/*"
-    ],
-    "action": {
-      "default_popup": "popup.html"
-    },
-    "background": {
-      "service_worker": "background.js"
-    }
-  }
+  "name": "ESPE",
+  "description": "Epileptic Seizure Prevention Exception",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": ["activeTab", "scripting"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "hello_extensions.png"
+  },
   
+  "background": {
+    "service_worker": "background.js"
+  }
+}
