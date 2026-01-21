@@ -1,8 +1,8 @@
 {
-  "name": "esper",
+  "name": "ESPER",
   "description": "A browser extension which modifies videos in real time to reduce drastic changes in brightness which may incur seizures in individuals with photosensitive epilepsy.",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "wxt",
@@ -15,6 +15,7 @@
     "postinstall": "wxt prepare"
   },
   "devDependencies": {
+    "eslint": "^9.39.2",
     "typescript": "^5.9.3",
     "wxt": "^0.20.6"
   }
