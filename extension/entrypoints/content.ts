@@ -180,31 +180,33 @@ function setupVideoPipeline(): (() => void) | null {
 
   console.log('Video found:', video.videoWidth, 'x', video.videoHeight);
 
-  // Don't hide video, render on top of it
+  // Hide the original video
+  const originalOpacity = video.style.opacity;
+  video.style.opacity = '0';
+
   const canvas = document.createElement('canvas');
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
-  
-  // Match video's exact position and size
-  const videoRect = video.getBoundingClientRect();
   canvas.style.position = 'fixed';
-  canvas.style.top = videoRect.top + 'px';
-  canvas.style.left = videoRect.left + 'px';
-  canvas.style.width = videoRect.width + 'px';
-  canvas.style.height = videoRect.height + 'px';
-  canvas.style.zIndex = '999999';
   canvas.style.pointerEvents = 'none';
+  canvas.style.zIndex = '10'; // Low z-index to stay below YouTube controls
+  
+  const updatePosition = () => {
+    const videoRect = video.getBoundingClientRect();
+    canvas.style.top = videoRect.top + 'px';
+    canvas.style.left = videoRect.left + 'px';
+    canvas.style.width = videoRect.width + 'px';
+    canvas.style.height = videoRect.height + 'px';
+  };
+  
+  // Wait a brief moment for layout to settle, then update position
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      updatePosition();
+    });
+  });
   
   document.body.appendChild(canvas);
-  
-  // Update position on window resize
-  const updatePosition = () => {
-    const rect = video.getBoundingClientRect();
-    canvas.style.top = rect.top + 'px';
-    canvas.style.left = rect.left + 'px';
-    canvas.style.width = rect.width + 'px';
-    canvas.style.height = rect.height + 'px';
-  };
   
   window.addEventListener('resize', updatePosition);
   window.addEventListener('scroll', updatePosition);
@@ -246,7 +248,7 @@ function setupVideoPipeline(): (() => void) | null {
       video
     );
 
-    gl.uniform1f(brightnessLoc, 1.0); // Change 1.0 to change brightness adjustment
+    gl.uniform1f(brightnessLoc, 0.5); // Try 0.5 for 50% brightness
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
     // Calculate average luminosity
@@ -266,7 +268,6 @@ function setupVideoPipeline(): (() => void) | null {
 
   video.addEventListener('play', render);
   
-  // Trigger initial render if video is already playing
   if (!video.paused) {
     render();
   }
@@ -275,6 +276,7 @@ function setupVideoPipeline(): (() => void) | null {
 
   return () => {
     running = false;
+    video.style.opacity = originalOpacity;
     canvas.remove();
     graph.remove();
     window.removeEventListener('resize', updatePosition);
